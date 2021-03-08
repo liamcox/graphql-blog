@@ -31,7 +31,7 @@ const UserType = new GraphQLObjectType({
     name: "User",
     description: "Documentation for user ...",
     fields: () => ({
-        id: { type: GraphQLString },
+        id: { type: GraphQLID },
         name: { type: GraphQLString },
         age: { type: GraphQLInt },
         profession: { type: GraphQLString },
@@ -95,6 +95,14 @@ const RootQuery = new GraphQLObjectType({
                 return _.find(usersData, { id: args.id });
             },
         },
+
+        users: {
+            type: new GraphQLList(UserType),
+            resolve(parent, args) {
+                return usersData;
+            },
+        },
+
         hobby: {
             type: HobbyType,
             args: { id: { type: GraphQLID } },
@@ -103,12 +111,25 @@ const RootQuery = new GraphQLObjectType({
                 return _.find(hobbyData, { id: args.id });
             },
         },
+        hobbies: {
+            type: new GraphQLList(HobbyType),
+            resolve(parent, args) {
+                return hobbyData;
+            },
+        },
+
         post: {
             type: PostType,
             args: { id: { type: GraphQLID } },
 
             resolve(parent, args) {
                 return _.find(postData, { id: args.id });
+            },
+        },
+        posts: {
+            type: new GraphQLList(PostType),
+            resolve(parent, args) {
+                return postData;
             },
         },
     },
@@ -121,7 +142,7 @@ const Mutation = new GraphQLObjectType({
         createUser: {
             type: UserType,
             args: {
-                // id: { type: GraphQLID },
+                id: { type: GraphQLID },
                 name: { type: GraphQLString },
                 age: { type: GraphQLInt },
                 profession: { type: GraphQLString },
@@ -134,6 +155,38 @@ const Mutation = new GraphQLObjectType({
                     profession: args.profession,
                 };
                 return user;
+            },
+        },
+        createPost: {
+            type: PostType,
+            args: {
+                comment: { type: GraphQLString },
+                userId: { type: GraphQLID },
+            },
+
+            resolve(parent, args) {
+                let post = {
+                    comment: args.comment,
+                    userId: args.userId,
+                };
+                return post;
+            },
+        },
+        createHobby: {
+            type: HobbyType,
+            args: {
+                title: { type: GraphQLString },
+                description: { type: GraphQLString },
+                userId: { type: GraphQLID },
+            },
+
+            resolve(parent, args) {
+                let hobby = {
+                    title: args.title,
+                    description: args.description,
+                    userId: args.userId,
+                };
+                return hobby;
             },
         },
     },
